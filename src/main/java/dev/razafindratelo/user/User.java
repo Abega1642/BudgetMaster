@@ -75,7 +75,7 @@ public class User {
     public List<Category> getTopCategories() {
         List<CategoryMapper> categories = new ArrayList<>();
         for (Category category : Category.values()) {
-            categories.add(new CategoryMapper(category, getTotalSpentByCategory(category));
+            categories.add(new CategoryMapper(category, getTotalSpentByCategory(category)));
         }
         categories.sort(Comparator.comparing(CategoryMapper::getAmount));
         return List.of(
