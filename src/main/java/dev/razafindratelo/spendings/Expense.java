@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @ToString
-public class Spending {
+public class Expense {
     private String description;
     private double amount;
     private Category category;
