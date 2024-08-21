@@ -69,25 +69,48 @@ public class User {
     public void reportingOverflowOfSpending() {
         if (getRemainingBudget() <= 0) {
             System.out.println("--- Reporting : Your budget is now greater than your monthly budget");
+        } else {
+            System.out.println(" --- Your budget can still handle your spending");
         }
     }
 
     public List<Category> getTopCategories() {
-        List<CategoryMapper> categories = new ArrayList<>();
-        for (Category category : Category.values()) {
-            categories.add(new CategoryMapper(category, getTotalSpentByCategory(category)));
+        List<CategoryMapper> categoriesMapped = new ArrayList<>();
+        for (Category category : getAllAvailableCategories()) {
+            categoriesMapped.add(new CategoryMapper(category, getTotalSpentByCategory(category)));
         }
-        categories.sort(Comparator.comparing(CategoryMapper::getAmount));
+        categoriesMapped.sort(Comparator.comparing(CategoryMapper::getAmount));
+        List<Category> categories = categoriesMapped.stream().map(CategoryMapper::getCategory).toList();
         return List.of(
-                categories.get(0).getCategory(),
-                categories.get(1).getCategory(),
-                categories.get(2).getCategory());
+                categories.get(categories.size() - 1),
+                categories.get(categories.size() - 2),
+                categories.get(categories.size() - 3)
+                );
     }
-
     public double getTotalSpentByCategory(Category category) {
         return getExpenseByCategory(category)
                 .stream()
                 .map(Expense::getAmount)
                 .reduce(0.0, Double::sum);
+    }
+
+    public List<CategoryMapper> calculateAverageSpendingPerCategory() {
+        List<CategoryMapper> categories = new ArrayList<>();
+        for (Category category : getAllAvailableCategories()) {
+            double values = getTotalSpentByCategory(category) / getExpenseByCategory(category).size();
+            categories.add(new CategoryMapper(category, values));
+        }
+        return categories;
+    }
+
+    public List<Category> getAllAvailableCategories() {
+        List<Category> categories = new ArrayList<>();
+        List<Category> categories1 = spendingsList.stream().map(Expense::getCategory).toList();
+        for (Category category : Category.values()) {
+            if (categories1.contains(category)) {
+                categories.add(category);
+            }
+        }
+        return categories;
     }
 }
